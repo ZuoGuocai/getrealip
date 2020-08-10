@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: getrealip
+  name: getrealip
+  namespace: devops
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: getrealip
+  template:
+    metadata:
+      labels:
+        app: getrealip
+    spec:
+      containers:
+      - image: registry.zuoguocai.io/release/getrealip:v2
+        imagePullPolicy: Always
+        name: getrealip
+        resources:
+          requests:
+            cpu: 0.5
+            memory: 500Mi
+          limits:
+            cpu: 0.5
+            memory: 500Mi
+        ports:
+          - name: http
+            containerPort: 12345
+            protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: getrealip
+  namespace: devops
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 12345
+  selector:
+    app: getrealip
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: my-ingress-for-getrealip  # Ingress 的名字，仅用于标识
+  namespace: devops
+spec:
+  tls:
+  - hosts:
+    - getrealip.zuoguocai.io
+    secretName: nginx-ingress-tls-secret
+  rules:                      # Ingress 中定义 L7 路由规则
+  - host: getrealip.zuoguocai.io   # 根据 virtual hostname 进行路由（请使用您自己的域名）
+    http:
+      paths:                  # 按路径进行路由
+      - path: /
+        backend:
+          serviceName: getrealip  # 指定后端的 Service 为之前创建的 nginx-service
+          servicePort: 80
