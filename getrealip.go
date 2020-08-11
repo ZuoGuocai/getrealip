@@ -31,7 +31,7 @@ func GetRealIP(w http.ResponseWriter, r *http.Request) {
     r2 := strings.Join([]string{"<h3 style='background-color:#DDA0DD;'>","X-Original-Forwarded-For:  ",r.Header.Get("X-Original-Forwarded-For"),"</h1>"},"")
     r3 := strings.Join([]string{"<h3 style='background-color:powderblue;'>","X-Forwarded-For:  ",r.Header.Get("X-Forwarded-For"),"</h1>"},"")
     r4 := strings.Join([]string{"<h3 style='background-color:#DDA0DD;'>","X-Real-Ip:  ",r.Header.Get("X-Real-Ip"),"</h1>"},"")
-    html := strings.Join([]string{head,r,r1,r2,r3,r4},"")
+    html := strings.Join([]string{head,r1,r2,r3,r4},"")
 
     io.WriteString(w, fmt.Sprintf(html))
     return
